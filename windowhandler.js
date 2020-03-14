@@ -1,6 +1,6 @@
 //as close to oob as i can find online
 //Leo Harford 2020
-// fluid simulation with an incompressable fluid with a little bit of dye in it to see it diffuse
+//Lattice Boltzman method for fluid simulation with an incompressable fluid with a little bit of dye in it to see it diffuse
 //works with a vector field
 //An implementation/port of https://mikeash.com/pyblog/fluid-simulation-for-dummies.html
 //globals
@@ -30,15 +30,18 @@ function mouseHandler(canvas,e,ctx){
     let x = event.clientX - rect.left;
     let y = event.clientY -  rect.top;
     x=Math.floor(x/2)
-    if(x==0){x+=1}
-    if(x>=255){x-=2}
+    if(x==0){x+=3}
+    if(x>=255){x-=3}
     y=Math.floor(y/2)
-    if(y==0){y+=1}
-    if(y>=255){y-=2}
+    if(y==0){y+=3}
+    if(y>=255){y-=3}
 
     if(e.button == 0 ){//if left clicking
-        j.addDensity(x,y,1);
-        j.addVelocity(x,y,((10*(Math.random()))%10)-10,((10*(Math.random()))%10)-10)
+        j.addDensity(x+1,y,10000000000000000000000);
+        j.addDensity(x,y+1,1000000000000000000000);
+        j.addDensity(x+1,y+1,100000000000000000000);
+        j.addDensity(x,y,10000000000000000000000000);
+       j.addVelocity(x,y,Math.random()*5,Math.random()*5)
         }
     else if(e.button == 2){ //right click
      
@@ -73,8 +76,8 @@ var tickMs = 1000/30;
 tickRate = 1/30;
 setInterval(main,tickMs);
 
-j =new Fluid(256,0.00001,1/30,0.00001)
-//j.addDensity(64,64,100000)
+j =new Fluid(256,0.000001,1/30,0.0000001)
+j.addDensity(64,64,10)
 //j.addVelocity(1,64,1,100)
 
 }
@@ -96,7 +99,8 @@ function drawGrid(grid){
     for(let i =0; i <grid.length;i++){
         for(let j =0; j <grid[i].length;j++){
            // console.log(grid[i][j])
-        ctx.fillStyle = 'hsl(' + (1-Math.tanh(grid[i][j]*200))*1000 + ',100%,' + 50 + '%)';
+       //Coloured fill style ctx.fillStyle = 'hsl(' + (1-Math.tanh(grid[i][j]*1000))*10000 + ',100%,' + 50 + '%)';
+        ctx.fillStyle = 'hsl(' +0 + ',000%,' + (1-Math.tanh(grid[i][j]*1000))*100+ '%)';
         ctx.fillRect(i*2,j*2,2,2);
         ctx.stroke();
         ctx.fill();
@@ -175,7 +179,7 @@ class Fluid{
     //this is the code that makes the stuff diffuse and handles the diffusion of its velocity
     diffuse(b,x,x0,diff,dt){
         let a = dt*diff*(this.size-2)*(this.size-2)
-        this.linearSolve(b,x,x0,a,1+2*a)//uysually 1 +6*a
+        this.linearSolve(b,x,x0,a,1+6*a)//uysually 1 +6*a
     }
     
     //solves the diffusion equation. with either of the vector field/grids and the diffussion grid
@@ -281,9 +285,9 @@ step() {
     let Vy0 = this.vy0;
     let s = this.s;
     let density = this.density;
-    //console.log("start",density[64][64])
+    console.log("start",density[64][64])
     this.diffuse(1, Vx0, Vx, visc, dt);
-    //console.log("after diffuse",density[64][64])
+    console.log("after diffuse",density[64][64])
     this.diffuse(2, Vy0, Vy, visc, dt);
 
     this.project(Vx0, Vy0, Vx, Vy);
