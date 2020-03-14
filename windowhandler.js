@@ -1,6 +1,6 @@
 //as close to oob as i can find online
 //Leo Harford 2020
-//Lattice Boltzman method for fluid simulation with an incompressable fluid with a little bit of dye in it to see it diffuse
+//fluid simulation with an incompressable fluid with a little bit of dye in it to see it diffuse
 //works with a vector field
 //An implementation/port of https://mikeash.com/pyblog/fluid-simulation-for-dummies.html
 //globals
