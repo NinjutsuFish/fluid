@@ -1,0 +1,14 @@
+//css time 
+// styles.css
+body {
+  background: #FFFFFF;
+  color: #ff0000;
+}
+//making canvas white + adding margin
+canvas {
+  background: #f8ff00;
+  padding: 0;
+  margin: 0 auto;
+  margin-bottom: 1rem;
+  display: block;
+}

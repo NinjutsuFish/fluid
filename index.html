@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- /by leo harford 2019/2020* -->
+<style>
+body {
+  background: #111;
+    color:red
+}
+//making canvas white + adding margin
+canvas {
+  background: #f8ff00;
+  padding: 0;
+  margin: 0 auto;
+  margin-bottom: 1rem;
+  display: block;
+}
+    
+</style>  
+</head>
+    
+<script src="windowhandler.js"></script>
+    
+<body>
+
+<h1 id="title" >Fluid Simulation</h1><br>
+<h3> Fluid simulation using navier stokes <br> JS implementation of c code for fluid simulation  <br> <br>click on the window to add dye and a random velocity to the water around it</h3>
+<form id="options">
+<input type="checkbox" id="view" value="false"> Switch To Velocity View
+
+<div class="slidecontainer">
+<input type="range" min="1" max="10" value="1" class="slider" id="viscosity"> Viscosity Of Liquid
+</div> 
+<div class="slidecontainer">
+<input type="range" min="1" max="100" value="1" class="slider" id="diff"> Rate Of Diffusion
+</div> 
+
+    
+</form>
+<br>
+<br>
+<canvas id="window" width="512" height="512"></canvas>
+    
+</body>
+</html>
