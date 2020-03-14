@@ -1,6 +1,6 @@
 //as close to oob as i can find online
 //Leo Harford 2020
-//Lattice Boltzman method for fluid simulation with an incompressable fluid with a little bit of dye in it to see it diffuse
+// fluid simulation with an incompressable fluid with a little bit of dye in it to see it diffuse
 //works with a vector field
 //An implementation/port of https://mikeash.com/pyblog/fluid-simulation-for-dummies.html
 //globals
@@ -84,7 +84,7 @@ j =new Fluid(256,0.00001,1/30,0.00001)
 //Main
 function main(){
     j.step();
-    if(document.getElementById("view").checked == false){
+    if(document.getElementById("view").checked == true){
         drawMagnitudeGrid(j.vx,j.vy)
     }
     else{
