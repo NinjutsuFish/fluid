@@ -1,5 +1,7 @@
 #Fluid Dynamics Simulation
 
+https://ninjutsufish.github.io/fluid-simulation/index.html
+
 An implementation of the navier stokes equations in JS based on https://www.mikeash.com/pyblog/fluid-simulation-for-dummies.html
 You can click on the screen to add dye and switch between modes to the magnitude of the velocities of each "particle"
 It works by breaking the screen down into 256*256 blocks. and each block has an x and y velocity.
