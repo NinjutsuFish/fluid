@@ -325,9 +325,9 @@ step() {
     this.diffuse(2, Vy0, Vy, visc, dt);
 
     this.project(Vx0, Vy0, Vx, Vy);
-   console.log("after project",Vx[0][0])
+   //console.log("after project",Vx[0][0])
     this.advect(1, Vx, Vx0, Vx0, Vy0, dt);
-    console.log("after issue",Vx[0][0])
+   // console.log("after issue",Vx[0][0])
     this.advect(2, Vy, Vy0, Vx0, Vy0, dt);
 //console.log("after issue 2",Vx[64][64])
     this.project(Vx, Vy, Vx0, Vy0);
