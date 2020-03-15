@@ -23,19 +23,26 @@ canvas {
     
 <body>
 
-<h1 id="title" >WIP Fluid Simulation</h1><br>
-<h3> An attempt Fluid simulation using navier stokes not necessarily realistic<br> JS implementation of c code for fluid simulation  <br> <br>click on the window to add dye and a random velocity to the water around it</h3>
+<h1 id="title" >Fluid Simulation</h1><br>
+<h3> Fluid simulation using navier stokes <br> JS implementation of c code for fluid simulation  <br> <br>left click on the window to add dye  and right click to add a source of velocity to the water</h3>
 <form id="options">
 <input type="checkbox" id="view" value="false"> Switch To Velocity View
-
+<p>Fluid settings</p>
 <div class="slidecontainer">
 <input type="range" min="1" max="10" value="1" class="slider" id="viscosity"> Viscosity Of Liquid
 </div> 
 <div class="slidecontainer">
-<input type="range" min="0" max="100" value="1" class="slider" id="diff"> Rate Of Diffusion
+<input type="range" min="0" max="100" value="0" class="slider" id="diff"> Rate Of Diffusion(How long the dye lasts for)
 </div> 
-
-    
+<br>
+<p>Interaction Settings</p>
+<input type="checkbox" id="dye_velocity" value="false"> Add a random velocity to the dye when it is added <br>
+<input type="checkbox" id="dye" value="false"> Add dye to sources <br>
+<label for="angle">Angle of source</label>
+<input type="number" id="angle" name="angle" min="0" max="360" value="0">
+<div class="slidecontainer">
+<input type="range" min="0" max="100" value="1" class="slider" id="force"> Source Strength
+</div> 
 </form>
 <br>
 <br>
