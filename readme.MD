@@ -6,6 +6,6 @@ You can togle the rate of diffusion and the viscosity of the liquid.
 Clicking on the screen gives a random velocity and adds some dye to that point on the screen
 
 
-The colouring is done by using HSL and changing the hue and using TanH
+The colouring is done by using HSL and changing the hue or luminosity and using TanH to compress it into a scale of values between 0 and 1
 
 By leo Harford 2020
