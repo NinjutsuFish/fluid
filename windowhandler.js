@@ -1,4 +1,3 @@
-//as close to oob as i can find online
 //Leo Harford 2020
 //fluid simulation with an incompressable fluid with a little bit of dye in it to see it diffuse
 //works with a vector field
@@ -13,7 +12,7 @@ var j
 var _force = 0;
 var _viscosity = 0;
 var _diffusion = 0;
-
+var sources = [];
 
 
 
@@ -37,14 +36,16 @@ function mouseHandler(canvas,e,ctx){
     if(y>=255){y-=3}
 
     if(e.button == 0 ){//if left clicking
-        j.addDensity(x+1,y,10000000000000000000000);
-        j.addDensity(x,y+1,1000000000000000000000);
-        j.addDensity(x+1,y+1,100000000000000000000);
-        j.addDensity(x,y,10000000000000000000000000);
-       j.addVelocity(x,y,Math.random()*5,Math.random()*5)
+        j.addDensity(x+1,y,10);
+        j.addDensity(x,y+1,10);
+        j.addDensity(x+1,y+1,10);
+        j.addDensity(x,y,10);
+        if(document.getElementById("dye_velocity").checked == true){j.addVelocity(x,y,40*(Math.random()-1),40*(Math.random()-1))}
         }
     else if(e.button == 2){ //right click
-     
+     let angle = parseInt(document.getElementById("angle").value);
+        sources.push([x,y,angle*Math.PI/180])
+    
     }
     
         
@@ -58,6 +59,9 @@ function start(){
 const canvas = document.getElementById('window');
 ctx = canvas.getContext('2d');
 canvas.style.backgroundColor = "white";
+canvas.oncontextmenu = function (e) {
+    e.preventDefault();
+};
 //event handling
 const eventlistener = canvas.addEventListener("mousedown",function(e){
     mouseHandler(canvas,e,ctx) ;//pasing ctx and canvas for drawing
@@ -71,12 +75,16 @@ var diffSlider = document.getElementById("diff");
 diffSlider.oninput = function() {
   j.diff = this.value*0.00001;
 } 
+var diffSlider = document.getElementById("force");
+diffSlider.oninput = function() {
+  _force = this.value;
+} 
 
 var tickMs = 1000/30;
 tickRate = 1/30;
 setInterval(main,tickMs);
 
-j =new Fluid(256,0.000001,1/30,0.0000001)
+j =new Fluid(256,0.000001,1/30,0)
 j.addDensity(64,64,10)
 //j.addVelocity(1,64,1,100)
 
@@ -86,7 +94,18 @@ j.addDensity(64,64,10)
 
 //Main
 function main(){
+    //j.addDensity(128,128,0.5)
+    //j.addVelocity(128,128,1,0)
     j.step();
+    for(let i=0;i<sources.length;i++){
+        let source = sources[i]
+        j.addVelocity(source[0],source[1],_force*Math.cos(source[2]),_force*Math.sin(source[2]))
+        if(document.getElementById("dye").checked == true){
+            j.addDensity(source[0],source[1],0.5)
+        }
+        
+    }
+    
     if(document.getElementById("view").checked == true){
         drawMagnitudeGrid(j.vx,j.vy)
     }
@@ -100,7 +119,7 @@ function drawGrid(grid){
         for(let j =0; j <grid[i].length;j++){
            // console.log(grid[i][j])
        //Coloured fill style ctx.fillStyle = 'hsl(' + (1-Math.tanh(grid[i][j]*1000))*10000 + ',100%,' + 50 + '%)';
-        ctx.fillStyle = 'hsl(' +0 + ',000%,' + (1-Math.tanh(grid[i][j]*1000))*100+ '%)';
+        ctx.fillStyle = 'hsl(' +0 + ',000%,' + (1-Math.tanh(grid[i][j]*10))*100+ '%)';
         ctx.fillRect(i*2,j*2,2,2);
         ctx.stroke();
         ctx.fill();
@@ -116,7 +135,7 @@ function drawGrid(grid){
 function drawMagnitudeGrid(grid1,grid2){
     for(let i =0; i <grid1.length;i++){
         for(let j =0; j <grid1[i].length;j++){
-        ctx.fillStyle = 'hsl(' + (1-Math.tanh(grid1[i][j]*grid1[i][j]+grid2[i][j]*grid2[i][j]*30000))*1000 + ',100%,' + 50 + '%)';
+        ctx.fillStyle = 'hsl(' + (1-Math.tanh(grid1[i][j]*grid1[i][j]+grid2[i][j]*grid2[i][j]*30))*1000 + ',100%,' + 50 + '%)';
         ctx.fillRect(i*2,j*2,2,2);
         ctx.stroke();
         ctx.fill();
@@ -154,6 +173,7 @@ class Fluid{
         for(let i=0;i<size;i++){
             //curenct x and y directions
             this.vx.push(new Array(this.size).fill(0))
+           // if(i>1) {this.vx[i-1][2] = -1}
             this.vy.push(new Array(this.size).fill(0))
             //previous x and y directions
             this.vx0.push(new Array(this.size).fill(0))
@@ -226,7 +246,6 @@ class Fluid{
         this.set_bnd(1, velocX);
         this.set_bnd(2, velocY);
     }
-    //Advection : the motion assosciated with 
     advect(b, d, d0, velocX, velocY, dt) {
       let i0, i1, j0, j1;
 
@@ -236,7 +255,7 @@ class Fluid{
       let s0, s1, t0, t1;
       let tmp1, tmp2, tmp3, x, y;
 
-      let Nfloat = N;
+      let Nfloat = N-1;
       let ifloat, jfloat;
       let i, j, k;
 
@@ -261,14 +280,29 @@ class Fluid{
           t1 = y - j0;
           t0 = 1.0 - t1;
 
+
           let i0i = parseInt(i0);
           let i1i = parseInt(i1);
           let j0i = parseInt(j0);
           let j1i = parseInt(j1);
-        
+        if(i0i == 256)i0i-=1;
+        if(j0i == 256)j0i-=1;
+        if(i1i == 256)i1i-=1;
+        if(j1i == 256)j1i-=1;    
+            
+            
+        try{
           d[i][j] =
             s0 * (t0 * d0[i0i][j0i] + t1 * d0[i0i][j1i]) +
-            s1 * (t0 * d0[i0i][j1i] + t1 * d0[i1i][j0i]);
+            s1 * (t0 * d0[i1i][j0i] + t1 * d0[i1i][j1i]);
+        }catch(err){
+            //console.log("error :()")
+            //console.log(i0i,j0i);
+            //console.log(d0[0][0])
+            //console.log("s0",s0,"s1",s1)
+            
+        }
+        
         }
       }
 
@@ -285,15 +319,15 @@ step() {
     let Vy0 = this.vy0;
     let s = this.s;
     let density = this.density;
-    console.log("start",density[64][64])
+    //console.log("start",density[64][64])
     this.diffuse(1, Vx0, Vx, visc, dt);
-    console.log("after diffuse",density[64][64])
+    //console.log("after diffuse",density[64][64])
     this.diffuse(2, Vy0, Vy, visc, dt);
 
     this.project(Vx0, Vy0, Vx, Vy);
-   // console.log("after project",density[64][64])
+   console.log("after project",Vx[0][0])
     this.advect(1, Vx, Vx0, Vx0, Vy0, dt);
-    //console.log("after issue",density[64][64])
+    console.log("after issue",Vx[0][0])
     this.advect(2, Vy, Vy0, Vx0, Vy0, dt);
 //console.log("after issue 2",Vx[64][64])
     this.project(Vx, Vy, Vx0, Vy0);
@@ -322,5 +356,5 @@ step() {
 
 
 
-//main code 
+//now everything is loaded start
 document.addEventListener('DOMContentLoaded', start) //just waits for everything to load first before it does anything c:
