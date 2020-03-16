@@ -1,3 +1,4 @@
+//as close to oob as i can find online
 //Leo Harford 2020
 //fluid simulation with an incompressable fluid with a little bit of dye in it to see it diffuse
 //works with a vector field
@@ -43,8 +44,8 @@ function mouseHandler(canvas,e,ctx){
         if(document.getElementById("dye_velocity").checked == true){j.addVelocity(x,y,40*(Math.random()-1),40*(Math.random()-1))}
         }
     else if(e.button == 2){ //right click
-     let angle = parseInt(document.getElementById("angle").value);
-        sources.push([x,y,angle*Math.PI/180])
+     let angle = parseInt(document.getElementById("angle").value)*Math.PI/180;
+        sources.push([x,y,Math.cos(angle)*_force,Math.sin(angle)*_force])
     
     }
     
@@ -99,7 +100,7 @@ function main(){
     j.step();
     for(let i=0;i<sources.length;i++){
         let source = sources[i]
-        j.addVelocity(source[0],source[1],_force*Math.cos(source[2]),_force*Math.sin(source[2]))
+        j.addVelocity(source[0],source[1],_force*source[2],_force*source[3])
         if(document.getElementById("dye").checked == true){
             j.addDensity(source[0],source[1],0.5)
         }
@@ -202,7 +203,7 @@ class Fluid{
         this.linearSolve(b,x,x0,a,1+6*a)//uysually 1 +6*a
     }
     
-    //solves the diffusion equation. with either of the vector field/grids and the diffussion grid
+    //solves for the next state
     linearSolve(b,x,x0,a,c){
         var cRecip = 1.0 / c;
         //console.log(x[0][2])
@@ -285,23 +286,19 @@ class Fluid{
           let i1i = parseInt(i1);
           let j0i = parseInt(j0);
           let j1i = parseInt(j1);
-        if(i0i == 256)i0i-=1;
-        if(j0i == 256)j0i-=1;
-        if(i1i == 256)i1i-=1;
-        if(j1i == 256)j1i-=1;    
+        if(i0i == 256)i0i=255;
+        if(j0i == 256)j0i=255;
+        if(i1i == 256)i1i=255;
+        if(j1i == 256)j1i=255;    
             
             
-        try{
-          d[i][j] =
-            s0 * (t0 * d0[i0i][j0i] + t1 * d0[i0i][j1i]) +
-            s1 * (t0 * d0[i1i][j0i] + t1 * d0[i1i][j1i]);
-        }catch(err){
-            //console.log("error :()")
-            //console.log(i0i,j0i);
-            //console.log(d0[0][0])
-            //console.log("s0",s0,"s1",s1)
+        
+      d[i][j] =
+        s0 * (t0 * d0[i0i][j0i] + t1 * d0[i0i][j1i]) +
+        s1 * (t0 * d0[i1i][j0i] + t1 * d0[i1i][j1i]);
+
             
-        }
+        
         
         }
       }
@@ -327,7 +324,7 @@ step() {
     this.project(Vx0, Vy0, Vx, Vy);
    //console.log("after project",Vx[0][0])
     this.advect(1, Vx, Vx0, Vx0, Vy0, dt);
-   // console.log("after issue",Vx[0][0])
+    //console.log("after issue",Vx[0][0])
     this.advect(2, Vy, Vy0, Vx0, Vy0, dt);
 //console.log("after issue 2",Vx[64][64])
     this.project(Vx, Vy, Vx0, Vy0);
@@ -356,5 +353,5 @@ step() {
 
 
 
-//now everything is loaded start
+//main code 
 document.addEventListener('DOMContentLoaded', start) //just waits for everything to load first before it does anything c:
